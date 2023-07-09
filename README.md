@@ -1,2 +1,2 @@
 # aussie-farm-frontend
-Run npm install for the axios
+Run `npm install` for the axios
