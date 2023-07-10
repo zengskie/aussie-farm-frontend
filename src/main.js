@@ -3,10 +3,10 @@ import {getItems} from './js/api.js';
 const API_BASE_URL = 'https://aussiefarm.local/api/v1/kangaroos';
 const fetchAndDisplayKangaroos = async () => {
     try {
-        const todos = await getItems();
-        displayKangaroo(todos);
+        const kangaroos = await getItems();
+        displayKangaroo(kangaroos);
     } catch (error) {
-        console.error('Error fetching todos:', error);
+        console.error('Error fetching kangaroos:', error);
     }
 };
 
@@ -71,12 +71,18 @@ const displayKangaroo = (kangaroo) => {
                 dataField: 'weight',
                 caption: "Weight",
                 dataType: 'number',
+                editorOptions: {
+                    min: 0
+                },
                 validationRules: [{type: "required", message: "Weight is required"}],
             },
             {
                 dataField: 'height',
                 caption: "Height",
                 dataType: 'number',
+                editorOptions: {
+                    min: 0
+                },
                 validationRules: [{type: "required", message: "Height is required"}]
             },
             {
@@ -224,5 +230,5 @@ const toastNotification = (message, type) => {
         });
 }
 
-// Fetch and display todos on page load
+// Fetch and display kangaroos on page load
 await fetchAndDisplayKangaroos();
