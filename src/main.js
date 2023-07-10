@@ -71,12 +71,18 @@ const displayKangaroo = (kangaroo) => {
                 dataField: 'weight',
                 caption: "Weight",
                 dataType: 'number',
+                editorOptions: {
+                    min: 0
+                },
                 validationRules: [{type: "required", message: "Weight is required"}],
             },
             {
                 dataField: 'height',
                 caption: "Height",
                 dataType: 'number',
+                editorOptions: {
+                    min: 0
+                },
                 validationRules: [{type: "required", message: "Height is required"}]
             },
             {
