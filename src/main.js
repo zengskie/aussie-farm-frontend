@@ -70,11 +70,13 @@ const displayKangaroo = (kangaroo) => {
             {
                 dataField: 'weight',
                 caption: "Weight",
+                dataType: 'number',
                 validationRules: [{type: "required", message: "Weight is required"}],
             },
             {
                 dataField: 'height',
                 caption: "Height",
+                dataType: 'number',
                 validationRules: [{type: "required", message: "Height is required"}]
             },
             {
@@ -99,6 +101,13 @@ const displayKangaroo = (kangaroo) => {
                 dataField: 'birthday',
                 caption: "Birthday",
                 dataType: "date",
+                format: "yyyy-MM-dd",
+                editorOptions: {
+                    onInitialized: function (e) {
+                        const currentDate = new Date();
+                        e.component.option("max", currentDate);
+                    }
+                },
                 validationRules: [{type: "required", message: "Birthday is required"}]
             },
             {
@@ -117,9 +126,30 @@ const displayKangaroo = (kangaroo) => {
                 visible: true
             },
         ],
+        onEditorPreparing: function(e) {
+            if (e.parentType === "dataRow" && e.dataField === "DateColumn" && e.rowType === "data") {
+                e.editorOptions.onInitialized = function(args) {
+                    const currentDate = new Date();
+                    const editorInstance = args.component;
+
+                    editorInstance.option("onValueChanged", function(args) {
+                        const enteredDate = args.value;
+
+                        if (enteredDate > currentDate) {
+                            // Cancel the value change
+                            args.event.preventDefault();
+                            args.event.stopPropagation();
+                        }
+                    });
+                };
+            }
+        },
         onRowInserted: function (e) {
             // Get the inserted data from the event arguments
             const insertedData = e.data;
+
+            // Convert the date format for the birthday property
+            insertedData.birthday = formatDateToYYYYMMDD(insertedData.birthday);
 
             // Send an AJAX request to your API endpoint to save the data
             $.ajax({
@@ -130,6 +160,7 @@ const displayKangaroo = (kangaroo) => {
                 data: JSON.stringify(insertedData),
             })
                 .done(function (response) {
+                    window.location.reload();
                     toastNotification(response.message, response.status);
                 })
                 .fail(function (xhr, textStatus, errorThrown) {
@@ -160,6 +191,14 @@ const displayKangaroo = (kangaroo) => {
         },
     })
 };
+
+const formatDateToYYYYMMDD = (dateString) => {
+    const dateObj = new Date(dateString);
+    const year = dateObj.getUTCFullYear();
+    const month = ('0' + (dateObj.getUTCMonth() + 1)).slice(-2);
+    const day = ('0' + dateObj.getUTCDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+}
 
 const toastNotification = (message, type) => {
     let direction = 'up-push';
